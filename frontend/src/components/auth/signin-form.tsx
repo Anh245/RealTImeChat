@@ -7,6 +7,8 @@ import { Label } from "../ui/label"
 import {z} from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthStore } from "@/stores/useAuthStore"
+import { useNavigate } from "react-router"
 
 const signinSchema = z.object({
   email: z.email("Vui lòng nhập địa chỉ email hợp lệ"),
@@ -19,12 +21,20 @@ export function SigninForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+    const {signIn} = useAuthStore();
+    const navigate = useNavigate();
+
     const{ register, handleSubmit, formState: {errors, isSubmitting}}= useForm<SigninFormValues>({
       resolver: zodResolver(signinSchema)
     });
     
     const onSubmit = async (data: SigninFormValues) => {
       // Handle form submission logic here
+      //Goi API để đăng ký người dùng mới
+      const {email, password} = data;
+      await signIn(email, password);
+      navigate("/");
+
     };
 
   return (

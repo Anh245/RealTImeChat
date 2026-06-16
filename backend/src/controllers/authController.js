@@ -6,7 +6,7 @@ import crypto from "crypto";
 import Session from "../models/Session.js";
 dotenv.config();
 
-const ACCESS_TOKEN_TTL = "30m";
+const ACCESS_TOKEN_TTL = "15m";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 *  1000; // 14 days in seconds
 export const signUp = async(req, res) => {
     try {
@@ -113,5 +113,36 @@ export const signOut = async(req, res) => {
         console.error("Error occurred while signing out:", error);
         return res.status(500).json({ message: "Loi trong qua trinh dang xuat" });
     }
+
 };
+export const refreshToken = async(req, res) => {
+        try {
+            // lay refresh token
+            const token = req.cookies?.refreshToken;
+            if(!token){
+                return res.status(401).jsom({message:"Token khong ton tai !"});
+
+            }
+            //so sanh voi refresh token trong db
+            const session = await Session.findOne({refreshToken: token});
+
+            // kiem tra het han chua
+            if(!session)
+                return res.status(403).json({message:"Refresh token khong hop le"});
+
+            // tao accessToken moi
+            const accessToken = jwt.sign({
+                userId: session.userId
+
+            }, process.env.ACCESS_TOKEN_SECRET, {expiresIn: ACCESS_TOKEN_TTL});
+
+            return res.status(200).json({accessToken});
+            
+
+        } catch (error) {
+           console.error("Loi khi goi refresh token", error);
+           return res.status(500).json({message:"Loi he thong"})
+        }
+};
+
    

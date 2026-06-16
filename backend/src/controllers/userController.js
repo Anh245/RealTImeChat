@@ -7,4 +7,7 @@ export const authMe = async(req,res) =>{
         console.error("Loi khi xac thuc nguoi dung goi authMe", error);
         return res.status(500).json({ message: "Loi he thong" });
     }
-}
+};
+export const test = async(req,res) =>{
+    return res.status(204);
+};
