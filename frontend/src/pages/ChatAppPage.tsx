@@ -1,5 +1,5 @@
 import React from 'react'
-import Logout from '@/components/auth/logout'
+import Logout from '@/components/auth/Logout'
 import { useAuthStore } from '@/stores/useAuthStore';
 import { Button } from '@/components/ui/button';
 import api from '@/lib/axios';
