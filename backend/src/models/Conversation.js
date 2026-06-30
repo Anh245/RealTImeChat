@@ -43,7 +43,7 @@ const lastMessageSchema = new mongoose.Schema({
         default: null,
     },
     senderId:{
-        type:Mongoose.Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:"User",
 
     },
@@ -67,7 +67,7 @@ const conversationSchema = new mongoose.Schema({
         required: true
     },
     group:{
-        type:groupSchema
+        type:groupChema
     },
     lastMessageAt:{
         type:Date

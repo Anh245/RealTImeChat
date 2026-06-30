@@ -13,9 +13,9 @@ export const createConversation = async (req, res) => {
         if(!type || (type === 'group' && !name)||
         !memberIds ||
         !Array.isArray(memberIds) ||
-        !memberIds.length == 0
+        memberIds.length === 0
         ){
-            return res.status(400).json({message:"Ten mhom va danh sach thanh vien la bat buoc"})
+            return res.status(400).json({message:"Ten nhom va danh sach thanh vien la bat buoc"})
         }
         let conversation;
         if(type === 'direct'){
@@ -60,9 +60,9 @@ export const createConversation = async (req, res) => {
         }
         await conversation.populate(
             [
-                {path:'participants.userId',select:'_id displayName avatarUrl'},
-                {path:'group.createdBy',select:'_id displayName avatarUrl'},
-                {path:'lastMessage.senderId',select:'_id displayName avatarUrl'},
+                {path:'participants.userId',select:'displayName avatarUrl'},
+                {path:'seenBy',select:'displayName avatarUrl'},
+                {path:'lastMessage.senderId',select:'displayName avatarUrl'},
             ]
         );
         return res.status(201).json({conversation});
@@ -81,12 +81,12 @@ export const getConversations = async (req, res) =>{
         }).sort({lastMessageAt:-1, updateAt: -1})
         .populate({
             path:'participants.userId',
-            select:'_id displayName avatarUrl',
+            select:'displayName avatarUrl',
 
         })
         .populate({
             path:'lastMessage.senderId',
-            select:'_id displayName avatarUrl',
+            select:'displayName avatarUrl',
 
         })
         .populate({
@@ -95,17 +95,17 @@ export const getConversations = async (req, res) =>{
         });
 
         const formatted = conversations.map((convo)=>{
-            const participants = (convo.participants || [].map((p)=>({
-                _id:p.updateAt?._id,
+            const participants = (convo.participants || []).map((p)=>({
+                _id:p.userId?._id,
                 displayName:p.userId?.displayName,
-                avatarUrl:p.userId?.avatarUrl,
+                avatarUrl:p.userId?.avatarUrl ?? null,
                 joinedAt:p.joinedAt,
-            })));
+            }));
             return{
                 ...convo.toObject(),
                 unreadCount: convo.unreadCounts || {},
                 participants,
-                l
+                
             };
         });
         return res.status(200).json({conversations:formatted});
@@ -116,4 +116,40 @@ export const getConversations = async (req, res) =>{
     }
 };
 export const getMessages = async (req, res) => {
+
+    try {
+        const {conversationId} = req.params;
+        const {limit = 50 ,cursor} = req.query;
+        const query = {conversationId};
+        if(cursor){
+            query.createAt = {$lt: new Date(cursor)}// lt: nho hon 
+
+        }
+        let messages = await Message.find(query)
+        .sort({createdAt:-1})
+        .limit(Number(limit) + 1);
+
+        let nextCursor = null;
+        if(messages.length > Number(limit)){
+            const nextMessage = messages[messages.length - 1];
+            nextCursor = nextMessage.createdAt.toISOString();
+            messages.pop();
+        }
+        
+        messages = messages.reverse();
+        
+        return res.status(200).json({
+            messages,
+            nextCursor,
+        });
+
+    } catch (error) {
+        console.error("Loi khi lay danh sach tin nhan", error);
+        return res.status(500).json({message:"Loi he thong"});
+    }
+
+
+
+
+
 }

@@ -11,8 +11,8 @@ import { useAuthStore } from "@/stores/useAuthStore"
 import { useNavigate } from "react-router"
 
 const signinSchema = z.object({
-  email: z.email("Vui lòng nhập địa chỉ email hợp lệ"),
-  password: z.string().min(6,"Mật khẩu phải có ít nhất 6 ký tự").max(100,"Mật khẩu không được vượt quá 100 ký tự")
+  username: z.string().min(3,"Vui lòng nhập địa chỉ hợp lệ"),
+  password: z.string().min(3,"Mật khẩu phải có ít nhất 6 ký tự").max(100,"Mật khẩu không được vượt quá 100 ký tự")
 });
 
 type SigninFormValues = z.infer<typeof signinSchema>;
@@ -31,8 +31,8 @@ export function SigninForm({
     const onSubmit = async (data: SigninFormValues) => {
       // Handle form submission logic here
       //Goi API để đăng ký người dùng mới
-      const {email, password} = data;
-      await signIn(email, password);
+      const {username, password} = data;
+      await signIn(username, password);
       navigate("/");
 
     };
@@ -58,9 +58,9 @@ export function SigninForm({
               </div>
 
               <div className="flex flex-col gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input type="email" id="email" placeholder="a@email.com...." {...register("email")} />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                <Label htmlFor="username">Ten nguoi dung</Label>
+                <Input type="text" id="username" placeholder="username" {...register("username")} />
+                {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
               </div>
 
               <div className="flex flex-col gap-3">
@@ -72,6 +72,12 @@ export function SigninForm({
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 Đăng nhập
               </Button>
+              <div className="text-center text-sm">
+                Bạn chưa có tài khoản?{" "}
+                <a href="/signup" className="underline underline-offset-4">
+                  Đăng ký ngay
+                </a>
+              </div>
             </div>
           </form>
         </CardContent>

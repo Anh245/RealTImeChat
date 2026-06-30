@@ -1,5 +1,5 @@
-import Conversation from "../models/Conversation";
-import Friend from "../models/Friend";
+import Conversation from "../models/Conversation.js";
+import Friend from "../models/Friend.js";
 
 const pair = (a,b ) => ( a< b ? [a,b]: [b,a]);
 export const checkFriendship = async (req,res, next) =>{
@@ -15,7 +15,7 @@ export const checkFriendship = async (req,res, next) =>{
 
         }
 
-        if(! recipientId){
+        if(!recipientId){
             return res.status(400).json({message:"Thieu recipientId"});
             
         }
@@ -31,6 +31,8 @@ export const checkFriendship = async (req,res, next) =>{
 
         }
 
+        //todo: Chat Nhom
+
         const friendChecks = memberIds.map(async( memberId)=>{
             const [userA,userB] = pair(me, memberId);
             const friend = await Friend.findOne({userA,userB});
@@ -43,7 +45,7 @@ export const checkFriendship = async (req,res, next) =>{
             return res.status(403).json({message:"Ban chi co the them ban be vao nhom"}, notFriends);
 
         }
-
+        next();
         
 
         
@@ -53,3 +55,35 @@ export const checkFriendship = async (req,res, next) =>{
         return res.status(500).json({message:"Loi he thong"});
     }
 };
+
+export const checkGroupMembership = async(req,res,next)=>{
+    try {
+        const {conversationId} = req.body;
+        const userId = req.user._id;
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if(!conversation){
+            return res.status(404).json({message:"Khong tim thay cuoc tro chuyen"});
+
+
+
+        }
+        // kiem tra nguoi gui co phai thanh vien nhom khong
+        const isMember = conversation.participants.some(
+            (p) => p.userId.toString() === userId.toString()
+        );
+        
+        if(!isMember){
+            return res.status(403).json({message:"Ban khong phai thanh vien nhom nay"});
+
+        }
+        req.conversation = conversation;
+        next();
+
+    } catch (error) {
+        console.error("Loi checkgroupMemberShip", error);
+        return res.status(500).json({message:"Loi he thong"});
+    }
+
+}
