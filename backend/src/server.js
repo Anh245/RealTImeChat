@@ -1,6 +1,7 @@
 import express from "express";
 import  dotenv from "dotenv";
 import { connectDB } from "./libs/db.js";
+import conversationRoute from "./routers/conversationRoute.js";
 import authRoute from "./routers/authRoute.js";
 import userRoute from "./routers/userRoute.js";
 import friendRoute from "./routers/friendRoute.js";
@@ -35,6 +36,7 @@ app.use("/api/users", userRoute);
 
 app.use("/api/friends", friendRoute);
 app.use("/api/messages",messageRoute);
+app.use("/api/conversations",conversationRoute);
 
 
 

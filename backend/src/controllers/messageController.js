@@ -1,3 +1,8 @@
+import Conversation from "../models/Conversation.js";
+import Message from "../models/Message.js";
+import { updateConversationAfterCreateMessage } from "../Utils/messageHelper.js";
+
+
 export const sendDirectMessage = async(req,res) =>{
     try {
         const {recipientId,content,conversationId} = req.body;
@@ -30,12 +35,20 @@ export const sendDirectMessage = async(req,res) =>{
             senderId,
             content,
         });
+        updateConversationAfterCreateMessage(conversation, message, senderId);
+        await conversation.save();
+
+        return res.status(201).json({message});
+
     } catch (error) {
-        
+        console.error("Loi xay ra khi gui tin nhan truc tiep", error);
+        return res.status(500).json({message:"Loi he thong"});
     }
 };
 
-export const sendGrouptMessage = async(req,res) =>{}
+export const sendGroupMessage = async(req,res) =>{
+    
+};
 
 
 
