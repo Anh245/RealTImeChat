@@ -2,199 +2,108 @@
 
 import * as React from "react"
 
-import { NavMain } from "@/components/sidebar/nav-main"
-import { NavProjects } from "@/components/sidebar/nav-projects"
-import { NavSecondary } from "@/components/sidebar/nav-secondary"
+import {Switch} from "@/components/ui/switch"
 import { NavUser } from "@/components/sidebar/nav-user"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, LifeBuoyIcon, SendIcon, FrameIcon, PieChartIcon, MapIcon, TerminalIcon } from "lucide-react"
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: (
-        <TerminalSquareIcon
-        />
-      ),
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: (
-        <BotIcon
-        />
-      ),
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: (
-        <BookOpenIcon
-        />
-      ),
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: (
-        <Settings2Icon
-        />
-      ),
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: (
-        <LifeBuoyIcon
-        />
-      ),
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: (
-        <SendIcon
-        />
-      ),
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: (
-        <FrameIcon
-        />
-      ),
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: (
-        <PieChartIcon
-        />
-      ),
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: (
-        <MapIcon
-        />
-      ),
-    },
-  ],
-}
+import { Moon, Sun } from "lucide-react"
+import CreateNewChat from "../chat/CreateNewChat"
+import NewGroupChatModal from "../chat/NewGroupChatModal"
+import GroupChatList from "../chat/GroupChatList"
+import AddFriendModal from "../chat/AddFriendModal"
+import DirectMessageList from "../chat/DirectMessageList"
+import { useThemeStore } from "@/stores/useThemeStore"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const{isDark,toggleTheme} = useThemeStore();
   return (
     <Sidebar variant="inset" {...props}>
+      {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton size="lg" asChild
+            className="bg-gradient-primary"
+            >
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <TerminalIcon className="size-4" />
+                <div className="flex w-full items-center px-2 justify-between">
+                    <h1 className="text-xl font-bold text-white">Moji</h1>
+                    <div className="flex items-center gap-2">
+                      <Sun className ="size-4 text-white/80"/>
+                      <Switch
+                      checked={isDark}
+                      onCheckedChange={toggleTheme}
+                      className="data-[state=checked]:bg-background/80" />
+                      <Moon className ="size-4 text-white/80"/>
+                    </div>
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
-                </div>
+
+
               </a>
+
+
+
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      {/* Content */}
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* New chat */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <CreateNewChat/>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+
+        {/* Group chat */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="uppercase">
+            Nhóm chat
+          </SidebarGroupLabel>
+          <SidebarGroupAction title="Tạo Nhóm" className="cursor-pointer">
+            <NewGroupChatModal/>
+            
+          </SidebarGroupAction>
+          <SidebarGroupContent>
+
+            <GroupChatList/>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+
+        {/* Direct messages */}
+         <SidebarGroup>
+          <SidebarGroupLabel className="uppercase">
+            Bạn bè
+          </SidebarGroupLabel>
+          <SidebarGroupAction title="Kết bạn" className="cursor-pointer">
+            <AddFriendModal/>
+            
+          </SidebarGroupAction>
+          <SidebarGroupContent>
+
+            <DirectMessageList/>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
       </SidebarContent>
+      {/* Footer */}
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* <NavUser user={data.user} /> */}
       </SidebarFooter>
     </Sidebar>
   )
