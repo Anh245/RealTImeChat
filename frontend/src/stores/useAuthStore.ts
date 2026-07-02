@@ -2,8 +2,11 @@ import {create} from "zustand";
 import{toast} from "sonner";
 import { authService } from "@/services/authService";
 import type { AuthState } from "@/types/store";
+import { persist } from "zustand/middleware";
+import { useChatStore } from "./useChatStore";
 
-export const useAuthStore = create <AuthState>((set,get) => ({
+export const useAuthStore = create <AuthState>()(
+    persist((set,get) => ({
 
     accessToken :null,
     user:null,
@@ -11,6 +14,8 @@ export const useAuthStore = create <AuthState>((set,get) => ({
     setAccessToken: (accessToken) => set({accessToken}),
     clearState: async() =>{
         set({accessToken:null,user:null,loading:false});
+        localStorage.clear();
+        useChatStore.getState().reset();
     },
 
     signUp: async (username,password,email,firstName,lastName)=>{
@@ -39,13 +44,17 @@ export const useAuthStore = create <AuthState>((set,get) => ({
     signIn: async(username,password) =>{
         try {
             set({loading:true});
-            const accessToken = await authService.signIn(username,password);
+
+            localStorage.clear();
+            useChatStore.getState().reset();
+
+            const {accessToken} = await authService.signIn(username,password);
             toast.success("Đăng nhập thành công");
 
             //set({accessToken});
             get().setAccessToken(accessToken);
             await get().fetchMe();
-
+            useChatStore.getState().fetchConversations();
 
         } catch (error) {
             console.log(error);
@@ -81,7 +90,7 @@ export const useAuthStore = create <AuthState>((set,get) => ({
         try {
             set({loading:true});
             const {user,fetchMe,setAccessToken} = get();
-            const accessToken = await authService.refresh();
+            const {accessToken} = await authService.refresh();
             //set({accessToken});
             setAccessToken(accessToken);
             if(!user){
@@ -96,4 +105,9 @@ export const useAuthStore = create <AuthState>((set,get) => ({
             set({loading:false});
         }
     }
-}));
+}),{
+    name:"auth-storage",
+    partialize:(state) =>({user : state.user})
+
+})
+);
