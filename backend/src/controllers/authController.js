@@ -120,7 +120,7 @@ export const refreshToken = async(req, res) => {
             // lay refresh token
             const token = req.cookies?.refreshToken;
             if(!token){
-                return res.status(401).jsom({message:"Token khong ton tai !"});
+                return res.status(401).json({message:"Token khong ton tai !"});
 
             }
             //so sanh voi refresh token trong db

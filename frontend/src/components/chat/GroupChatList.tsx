@@ -13,7 +13,8 @@ const GroupChatList = () => {
       {
         groupchats.map((convo) =>(
           <GroupChatCard
-          convo ={convo}/>
+          convo ={convo}
+          key={convo._id}/>
         ))
       }
       

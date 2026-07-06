@@ -4,10 +4,13 @@ import ChatCard from './ChatCard'
 import { useChatStore } from '@/stores/useChatStore';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/useAuthStore';
+import UserAvatar from './UserAvatar';
+import StatusBadge from './StatusBadge';
+import UnreadCountBadge from './UnreadCountBadge';
 
 const DirectMessageCard = ({convo} :{convo:Conversation}) => {
     const {user} = useAuthStore();
-    const {activeConversationId, setActiveConversation,messages} = useChatStore();
+    const {activeConversationId, setActiveConversation,messages, fetchMessages} = useChatStore();
     
     if(!user) return null;
 
@@ -23,6 +26,7 @@ const DirectMessageCard = ({convo} :{convo:Conversation}) => {
         setActiveConversation(id);
         if(!messages[id]){
             //fetch messages
+            await fetchMessages();
         }
 
     }
@@ -38,8 +42,16 @@ const DirectMessageCard = ({convo} :{convo:Conversation}) => {
     leftSection ={
         <>
             {/* TO DO : USER AVATAR */}
+            <UserAvatar type="sidebar" name= {otherUser.displayName ?? ""}
+            avatarUrl={otherUser.avatarUrl ?? ""}
+            />
             {/* TODO: STATUS BADGE */}
+
+            <StatusBadge status = "offline"/>
             {/* TODO: UNREAD COUNT */}
+            {
+                unreadCount > 0 && <UnreadCountBadge unreadCount={unreadCount}/>
+            }
         </>
     }
     onSelect = {handleSelectConversation}
