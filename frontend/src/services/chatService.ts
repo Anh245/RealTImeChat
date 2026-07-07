@@ -3,7 +3,7 @@ import type { ConversationResponse, Message } from "@/types/chat";
 
 interface FetchMessageProps{
     messages: Message[],
-    cursor?:string,
+    cursor?:string;
 
 }
 
