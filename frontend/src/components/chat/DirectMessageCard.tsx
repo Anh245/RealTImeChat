@@ -7,11 +7,12 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import UserAvatar from './UserAvatar';
 import StatusBadge from './StatusBadge';
 import UnreadCountBadge from './UnreadCountBadge';
+import { useSocketStore } from '@/stores/useSocketStore';
 
 const DirectMessageCard = ({convo} :{convo:Conversation}) => {
     const {user} = useAuthStore();
     const {activeConversationId, setActiveConversation,messages, fetchMessages} = useChatStore();
-    
+    const {onlineUsers} = useSocketStore();
     if(!user) return null;
 
     //Tim nguoi dung trong cuoc tro chuyen(Loc paticipent co id khac voi id cua user hien tai)
@@ -47,7 +48,7 @@ const DirectMessageCard = ({convo} :{convo:Conversation}) => {
             />
             {/* TODO: STATUS BADGE */}
 
-            <StatusBadge status = "offline"/>
+            <StatusBadge status = {onlineUsers.includes(otherUser?._id ?? "") ? "online": "offline"} />
             {/* TODO: UNREAD COUNT */}
             {
                 unreadCount > 0 && <UnreadCountBadge unreadCount={unreadCount}/>

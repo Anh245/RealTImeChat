@@ -26,7 +26,7 @@ const MessageItem = ({message, index, messages, selectedConvo, lastMessageStatus
 
     return (
     <div
-        className={cn("flex gap-2 message-bounce", message.isOwn ? "justify-end" : "justify-start")}
+        className={cn("flex gap-2 message-bounce mt-1", message.isOwn ? "justify-end" : "justify-start")}
     >
         {/* Avatar */}
 
