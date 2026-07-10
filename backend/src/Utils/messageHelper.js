@@ -17,4 +17,10 @@ export const updateConversationAfterCreateMessage = (conversation, message, send
 
         conversation.unreadCounts.set(memberId, isSender ? 0 : prevCount + 1)
     })
+};
+
+export const emitNewMessage = (io, conversation, message )  =>{
+    io.to(conversation._id.toString()).emit("new-message",{
+        
+    })
 }
