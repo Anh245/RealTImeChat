@@ -66,7 +66,14 @@ export interface ChatState{
         content: string,
         imgUrl?: string
     ) => Promise<void>;
+    //add message
+    addMessage:(message : Message) => Promise<void>;
 
+
+    // update convo
+    updateConversation:(conversation: Conversation) => void;
+
+    markAsSeen:(conversationId: string) => Promise<void>;
 
 }
 
