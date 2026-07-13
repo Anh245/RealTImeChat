@@ -2,7 +2,7 @@ import { cn, formatMessageTime } from "@/lib/utils";
 import type { Conversation, Message, Participant } from "@/types/chat";
 import UserAvatar from "./UserAvatar";
 import { Card } from "../ui/card";
-import { is } from "zod/v4/locales";
+// import { is } from "zod/v4/locales";
 import { Badge } from "../ui/badge";
 
 
@@ -12,11 +12,11 @@ interface MessageItemProps{
     index: number;
     messages: Message[];
     selectedConvo: Conversation;
-    lastMessageStatus: "delivered" | "seen";
+    lastMessageStatus?: "delivered" | "seen";
 }
 
 const MessageItem = ({message, index, messages, selectedConvo, lastMessageStatus}:MessageItemProps) => {
-    const prev = messages[index - 1];
+    const prev = index + 1 < messages.length ? messages[index + 1] : undefined;
     
     const isGroupBreak = index === 0 ||
         message.senderId !== prev?.senderId ||
@@ -25,6 +25,15 @@ const MessageItem = ({message, index, messages, selectedConvo, lastMessageStatus
     const participant = selectedConvo.participants.find((p:Participant) => p._id.toString() === message.senderId.toString());
 
     return (
+    <>
+     {/* Time */}
+
+            {isGroupBreak &&(
+                <span className="text-xs text-muted-foreground px-1">
+                    {formatMessageTime(new Date(message.createdAt))}
+                </span>
+            )}
+
     <div
         className={cn("flex gap-2 message-bounce mt-1", message.isOwn ? "justify-end" : "justify-start")}
     >
@@ -55,13 +64,7 @@ const MessageItem = ({message, index, messages, selectedConvo, lastMessageStatus
             >
                 <p className="text-sm leading-relaxed wrap-break-words"> {message.content}</p>
             </Card>
-            {/* Time */}
-
-            {isGroupBreak &&(
-                <span className="text-xs text-muted-foreground px-1">
-                    {formatMessageTime(new Date(message.createdAt))}
-                </span>
-            )}
+           
 
             {/* Seen/ delivered */}
             {message.isOwn && message._id === selectedConvo.lastMessage?._id &&(
@@ -78,6 +81,7 @@ const MessageItem = ({message, index, messages, selectedConvo, lastMessageStatus
 
         </div>
     </div>
+    </>
   )
 }
 

@@ -194,7 +194,7 @@ export const useChatStore = create<ChatState>()(
                    }));
 
                 } catch (error) {
-                    
+                    console.error("Lỗi xảy ra khi markAsSeen:",error);
                 }
             }
 

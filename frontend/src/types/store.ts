@@ -71,9 +71,9 @@ export interface ChatState{
 
 
     // update convo
-    updateConversation:(conversation: Conversation) => void;
+    updateConversation:(conversation: unknown) => void;
 
-    markAsSeen:(conversationId: string) => Promise<void>;
+    markAsSeen:() => Promise<void>;
 
 }
 
