@@ -1,3 +1,6 @@
+import { uploadImageFromBuffer } from "../middlewares/uploadMiddleware.js";
+import User from "../models/User.js";
+
 export const authMe = async(req,res) =>{
     try {
         const user = req.user;
@@ -16,14 +19,50 @@ export const searchUserByUsername = async (req,res) => {
         }
         const user = await User.findOne({username}).select("_id displayName username, avatarUrl");
 
-        return res.satus(200).json({user});
+        return res.status(200).json({user});
 
 
     } catch (error) {
         console.error("Loi xay ra khi searchUserByUsername");
-        return res.satus(500).json({message:"Loi he thong"});     
+        return res.status(500).json({message:"Loi he thong"});     
     }
 };
 export const test = async(req,res) =>{
     return res.status(204);
 };
+
+export const uploadAvatar = async(req,res) =>{
+    try {
+        const file = req.file;
+        const userId = req.user._id;
+
+        if(!file){
+            return res.status(400).json({message:"Thieu file anh"});
+
+        }
+
+        const result = await uploadImageFromBuffer(file.buffer);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                avatarUrl: result.secure_url,
+                avatarId: result.public_id,
+            },
+            {new: true},
+            ).select("avatarUrl");
+
+        if(!updatedUser.avatarUrl){
+            return res.status(400).json({message:"avatar tra ve null"});
+
+        }
+        return res.status(200).json({avatarUrl: updatedUser.avatarUrl});
+        
+
+
+    } catch (error) {
+        console.error("Loi khi upload avatar", error);
+        return res.status(500).json({message:"Loi he thong"});
+    
+    }
+}

@@ -79,7 +79,12 @@ export const useSocketStore = create<SocketState>((set,get)=>({
             
         })
 
+        // new group chat
+        socket.on("new-group", (conversation) =>{
+            useChatStore.getState().addConvo(conversation);
+            socket.emitWithAck('join-conversation', conversation._id);
 
+        })
 
 
     },

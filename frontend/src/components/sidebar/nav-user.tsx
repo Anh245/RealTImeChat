@@ -23,15 +23,20 @@ import {
 import type { User } from "@/types/user"
 import { ChevronsUpDownIcon, UserIcon, Bell } from "lucide-react"
 import Logout from "../auth/Logout"
+import { useState } from "react"
+import FriendRequestDialog from "../friendRequest/FriendRequestDialog"
+import ProfileDialog from "../profile/ProfileDialog"
 
 export function NavUser({
   user,
 }: {
   user: User
 }) {
-  const { isMobile } = useSidebar()
-
+  const { isMobile } = useSidebar();
+  const [friendRequestOpen, setFriendRequestOpen] = useState(false);
+  const [profileOpen,setProfileOpen] = useState(false);
   return (
+  <>
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -71,13 +76,16 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={()=>setProfileOpen(true)}>
                 <UserIcon className="text-muted-foreground 
                 dark:group-focus:text-accent-foreground!" 
                 />
                 Tài khoản
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+              
+                onClick={()=>setFriendRequestOpen(true)}
+              >
                 <Bell className="text-muted-foreground 
                 dark:group-focus:text-accent-foreground!"
                 />
@@ -94,5 +102,17 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+
+
+    <FriendRequestDialog
+    open= {friendRequestOpen}
+    setOpen = {setFriendRequestOpen}
+    />
+    <ProfileDialog
+      open ={profileOpen}
+      setOpen = {setProfileOpen}
+    />
+
+  </>
+  );
 }

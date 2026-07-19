@@ -10,6 +10,40 @@ export const friendService = {
         const res = await api.post("/friends/requests", {to,message});
         return res.data.message;
     
-    }
+    },
+    async getAllFriendRequest(){
+        try {
+            const res = await api.get("/friends/requests");
+            const {sent, received} = res.data;
+            return {sent,received};
+
+        } catch (error) {
+            console.error(" Loi khi gui get all friend request: ",error)
+        }
+    },
+
+    async acceptRequest(requestId: string){
+        try {
+            const res = await api.post(`/friends/requests/${requestId}/accept`);
+            return res.data.requestAcceptedBy;
+
+        } catch (error) {   
+            console.error(" Loi khi gui accept request: ",error);
+        }
+    },
+
+    async declineRequest(requestId: string){
+        try {
+            await api.post(`/friends/requests/${requestId}/decline`);
+
+        } catch (error) {
+            console.error(" Loi khi gui decline request: ",error);
+        }
+    },
+      
+    async getFriendList () {
+        const  res = await api.get("/friends");
+        return res.data.friends;
         
+    }
 }

@@ -10,9 +10,9 @@ const ACCESS_TOKEN_TTL = "15m";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 *  1000; // 14 days in seconds
 export const signUp = async(req, res) => {
     try {
-        const{ username, email, password, firstname,lastname } = req.body;
+        const{firstName, lastName, username, email, password } = req.body;
 
-        if(!username || !email || !password || !firstname || !lastname){
+        if(!username || !email || !password || !firstName || !lastName){
             return res.status(400).json({ message: "All fields are required" });
         }
         // Check if user already exists
@@ -30,7 +30,7 @@ export const signUp = async(req, res) => {
             username,
             hashPassword,
             email,
-           displayName: `${firstname} ${lastname}`,
+           displayName: `${firstName} ${lastName}`,
         });
         
         
