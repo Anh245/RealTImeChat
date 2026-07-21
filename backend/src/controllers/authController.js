@@ -35,7 +35,7 @@ export const signUp = async(req, res) => {
         
         
         //return success response
-        return res.status(204);
+        return res.status(201).json({ message: "Sign up successful" });
     } catch (error) {
         console.error("Error occurred while signing up:", error);
         return res.status(500).json({ message: "Internal server error" });
@@ -104,7 +104,7 @@ export const signOut = async(req, res) => {
             res.clearCookie("refreshToken");
 
         }
-        return res.status(204);
+        return res.status(204).send();
         //Xoa refresh token khỏi session
 
 

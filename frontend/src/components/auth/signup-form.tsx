@@ -8,6 +8,7 @@ import {z} from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/stores/useAuthStore"
+import { useNavigate } from "react-router"
 const signupSchema = z.object({
   firstName: z.string().min(2,"Họ phải có ít nhất 2 ký tự").max(100,"Họ không được vượt quá 100 ký tự"),
   lastName: z.string().min(2,"Tên phải có ít nhất 2 ký tự").max(100,"Tên không được vượt quá 100 ký tự"),
@@ -24,7 +25,7 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
 
   const {signUp} =useAuthStore();
-
+  const navigate = useNavigate();
   const{ register, handleSubmit, formState: {errors, isSubmitting}}= useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema)
   });
@@ -33,8 +34,9 @@ export function SignupForm({
     // Handle form submission logic here
     //Goi API để đăng ký người dùng mới
     const {firstName, lastName, username, email, password} = data;
-
+    
     await signUp(firstName, lastName, username, email, password);
+    // navigate("/signin");
   };
 
   return (

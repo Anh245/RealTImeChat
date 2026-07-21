@@ -26,6 +26,7 @@ import Logout from "../auth/Logout"
 import { useState } from "react"
 import FriendRequestDialog from "../friendRequest/FriendRequestDialog"
 import ProfileDialog from "../profile/ProfileDialog"
+import { useFriendStore } from "@/stores/useFriendStore"
 
 export function NavUser({
   user,
@@ -35,6 +36,8 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const [friendRequestOpen, setFriendRequestOpen] = useState(false);
   const [profileOpen,setProfileOpen] = useState(false);
+  const { receivedList } = useFriendStore();
+  const pendingCount = receivedList?.length ?? 0;
   return (
   <>
     <SidebarMenu>
@@ -45,10 +48,17 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatarUrl} alt={user.displayName} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={user.avatarUrl} alt={user.displayName} />
+                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                </Avatar>
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white z-10">
+                    {pendingCount > 9 ? "9+" : pendingCount}
+                  </span>
+                )}
+              </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.displayName.charAt(0)}</span>
                 <span className="truncate text-xs">{user.username}</span>
@@ -83,13 +93,25 @@ export function NavUser({
                 Tài khoản
               </DropdownMenuItem>
               <DropdownMenuItem
-              
+            
                 onClick={()=>setFriendRequestOpen(true)}
               >
-                <Bell className="text-muted-foreground 
-                dark:group-focus:text-accent-foreground!"
-                />
-                Thông báo 
+                <div className="relative">
+                  <Bell className="text-muted-foreground 
+                  dark:group-focus:text-accent-foreground!"
+                  />
+                  {pendingCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+                      {pendingCount > 9 ? "9+" : pendingCount}
+                    </span>
+                  )}
+                </div>
+                Thông báo
+                {pendingCount > 0 && (
+                  <span className="ml-auto text-xs font-semibold text-destructive">
+                    {pendingCount}
+                  </span>
+                )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

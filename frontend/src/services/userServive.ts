@@ -2,8 +2,8 @@ import api from "@/lib/axios";
 
 
 export const userServive = {
-    uploadAvatar: async(fromData: FormData) =>{
-        const res = await api.post("/users/uploadAvatar", FormData,{
+    uploadAvatar: async(formData: FormData) =>{
+        const res = await api.post("/users/upload", formData,{
             headers:{"Content-Type":"multipart/form-data"}
         });
 

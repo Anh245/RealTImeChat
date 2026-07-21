@@ -62,7 +62,7 @@ export const useFriendStore = create<FriendState>((set,get)=>({
             set({loading:true});
             await friendService.acceptRequest(requestId);
             set((state) =>({
-                receivedList: state.receivedList.filter((r) => r.id !== requestId)
+                receivedList: state.receivedList.filter((r) => r._id !== requestId)
             }))
         } catch (error) {
             console.error("Loi xay ra khi acceptRequest", error);
@@ -76,7 +76,7 @@ export const useFriendStore = create<FriendState>((set,get)=>({
             set({loading:true});
             await friendService.declineRequest(requestId);
             set((state) =>({
-                sentList: state.sentList.filter((r) => r.id !== requestId)
+                sentList: state.sentList.filter((r) => r._id !== requestId)
             }))
         } catch (error) {
             console.error("Loi xay ra khi declineRequest", error);

@@ -170,7 +170,8 @@ export const getAllFriends = async(req,res)=>{
         }
 
         const friends = friendships.map((f) =>
-        f.userA._id.toString() === userId.toString() ?f.userB: f.userA);
+            f.userA._id.toString() === userId.toString() ? f.userB : f.userA
+        );
 
         return res.status(200).json({friends});
 
@@ -188,8 +189,8 @@ export const getAllRequests = async(req,res)=>{
 
         const populateFields = '_id username displayName avatarUrl';
         const [sent, received] = await Promise.all([
-            FriendRequest.find({from:userId}.populate("to",populateFields)),
-            FriendRequest.find({to:userId}.populate("from",populateFields)),
+            FriendRequest.find({ from: userId }).populate("to", populateFields),
+            FriendRequest.find({ to: userId }).populate("from", populateFields),
         ]);
         return res.status(200).json({sent,received});
     } catch (error) {

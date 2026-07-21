@@ -1,146 +1,138 @@
-import { useChatStore } from '@/stores/useChatStore';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import ChatWelcomeScreen from './ChatWelcomeScreen';
-import MessageItem from './MessageItem';
-import InfinitScroll from 'react-infinite-scroll-component';
-import { Container } from 'lucide-react';
+import { useChatStore } from "@/stores/useChatStore";
+import ChatWelcomeScreen from "./ChatWelcomeScreen";
+import MessageItem from "./MessageItem";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const ChatWindowBody = () => {
-  const {activeConversationId, conversations, messages: allMessages,fetchMessages} = useChatStore();
-  const [lastMessageStatus,setLastMessageStatus] = useState<"delivered" |"seen">();
-  const key = `chat-scroll-${activeConversationId}`;
-
+  const {
+    activeConversationId,
+    conversations,
+    messages: allMessages,
+    fetchMessages,
+  } = useChatStore();
+  const [lastMessageStatus, setLastMessageStatus] = useState<"delivered" | "seen">(
+    "delivered"
+  );
 
   const messages = allMessages[activeConversationId!]?.items ?? [];
-  const reveredMessages = [...messages].reverse();
-  const selectedConvo = conversations.find((c) => c._id === activeConversationId);
+  const reversedMessages = [...messages].reverse();
   const hasMore = allMessages[activeConversationId!]?.hasMore ?? false;
+  const selectedConvo = conversations.find((c) => c._id === activeConversationId);
+  const key = `chat-scroll-${activeConversationId}`;
 
-  //ref
+  // ref
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() =>{
+  // seen status
+  useEffect(() => {
     const lastMessage = selectedConvo?.lastMessage;
-    if(!lastMessage){
+    if (!lastMessage) {
       return;
     }
 
     const seenBy = selectedConvo?.seenBy ?? [];
 
-    setLastMessageStatus(seenBy.length > 0 ? "seen": "delivered");
+    setLastMessageStatus(seenBy.length > 0 ? "seen" : "delivered");
+  }, [selectedConvo]);
 
+  // kéo xuống dưới khi load convo
+  useLayoutEffect(() => {
+    if (!messagesEndRef.current) return;
 
-  },[selectedConvo]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [activeConversationId]);
 
-  //Keo xuong duoi load convo
-  useLayoutEffect(()=>{
-    if(!messagesEndRef.current){
-      return;
-    }
-
-    messagesEndRef.current.scrollIntoView({
-      behavior:"smooth",
-      block:"end"
-    })
-  },[activeConversationId]);
-  
-  const fetchMoreMessages = async() => {
-    if(!activeConversationId){
+  const fetchMoreMessages = async () => {
+    if (!activeConversationId) {
       return;
     }
 
     try {
       await fetchMessages(activeConversationId);
     } catch (error) {
-      console.error("Loi xay ra khi fetch them tin nhan", error);
+      console.error("Lỗi xảy ra khi fetch thêm tin", error);
     }
   };
 
   const handleScrollSave = () => {
     const container = containerRef.current;
-    if(!container || !activeConversationId){
+    if (!container || !activeConversationId) {
       return;
     }
 
-    
-    sessionStorage.setItem(key,JSON.stringify({
-      scrollTop: container.scrollTop,
-      scrollHeight: container.scrollHeight,
-    }) )
+    sessionStorage.setItem(
+      key,
+      JSON.stringify({
+        scrollTop: container.scrollTop,
+        scrollHeight: container.scrollHeight,
+      })
+    );
   };
-  
+
   useLayoutEffect(() => {
     const container = containerRef.current;
-    if(!container ) return;
-    
+    if (!container) return;
+
     const item = sessionStorage.getItem(key);
-    if(item) {
-      const {srollTop} = JSON.parse(item);
-      // container.scrollTop = srollTop;
-      // trinh duyet tinh toan xong layout moi goi ham call back
-      requestAnimationFrame(() =>{
-        container.scrollTop = srollTop;
-      })
+
+    if (item) {
+      const { scrollTop } = JSON.parse(item);
+      requestAnimationFrame(() => {
+        container.scrollTop = scrollTop;
+      });
     }
-  },[messages.length]);
-  
-  if(!selectedConvo) {
-    return (
-      <ChatWelcomeScreen/>
-    );
+  }, [messages.length]);
+
+  if (!selectedConvo) {
+    return <ChatWelcomeScreen />;
   }
 
-  if(!messages?.length){
+  if (!messages?.length) {
     return (
-      <div className='flex h-full items-center justify-center text-muted-foreground'>
-          Chưa có tin nhắn nào trong cuộc trò chuyện này.
+      <div className="flex h-full items-center justify-center text-muted-foreground ">
+        Chưa có tin nhắn nào trong cuộc trò chuyện này.
       </div>
     );
   }
+
   return (
-    <div className='p-4 bg-primary-foreground h-full flex flex-col overflow-hidden'>
+    <div className="p-4 bg-primary-foreground h-full flex flex-col overflow-hidden">
       <div
-      id = "scrollable-div"
-      ref = {containerRef}
-      className='flex flex-col-reverse overflow-y-auto overflow-x-hidden beautiful-srollbar'>
-        <InfinitScroll
+        id="scrollableDiv"
+        ref={containerRef}
+        onScroll={handleScrollSave}
+        className="flex flex-col-reverse overflow-y-auto overflow-x-hidden beautiful-scrollbar"
+      >
+        <div ref={messagesEndRef}></div>
+        <InfiniteScroll
           dataLength={messages.length}
-          next = {fetchMoreMessages}
-          hasMore = {hasMore}
-          scrollableTarget="scrollable-div"
-          loader={<p>Dang tai.....</p>}
-          inverse= {true}
-          style = {{
+          next={fetchMoreMessages}
+          hasMore={hasMore}
+          scrollableTarget="scrollableDiv"
+          loader={<p>Đang tải...</p>}
+          inverse={true}
+          style={{
             display: "flex",
-            flexDirection:"column-reverse",
-            overflow: "visible"
+            flexDirection: "column-reverse",
+            overflow: "visible",
           }}
-          onScroll={handleScrollSave}
         >
-          <div ref={messagesEndRef}></div>
-          {
-          reveredMessages.map((message,index) =>(
-            <>
-              {message.content}
-              <MessageItem
-                key = {message._id ?? index}
-                message = {message}
-                index = {index}
-                messages = {reveredMessages}
-                selectedConvo = {selectedConvo}
-                lastMessageStatus={lastMessageStatus}
-              />
-            </>
-          ))
-        }
-        </InfinitScroll>
-       
-        
+          {reversedMessages.map((message, index) => (
+            <MessageItem
+              key={message._id ?? index}
+              message={message}
+              index={index}
+              messages={reversedMessages}
+              selectedConvo={selectedConvo}
+              lastMessageStatus={lastMessageStatus}
+            />
+          ))}
+        </InfiniteScroll>
       </div>
-      
     </div>
-  )
-}
+  );
+};
 
-export default ChatWindowBody
+export default ChatWindowBody;

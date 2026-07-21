@@ -19,16 +19,16 @@ export interface Friend {
 }
 
 export interface FriendRequest {
-  id: string;
+  _id: string;
   from?:{
-    id: string;
+    _id: string;
     username: string;
     displayName: string;
     avatarUrl?: string;
   };
   
   to?:{
-    id: string;
+    _id: string;
     username: string;
     displayName: string;
     avatarUrl?: string;

@@ -4,7 +4,7 @@ import { checkFriendship, checkGroupMembership } from '../middlewares/friendMidl
 
 const router = express.Router();
 
-router.post('/direct',checkFriendship,sendDirectMessage);
+router.post('/direct', sendDirectMessage);
 router.post('/group',checkGroupMembership,sendGroupMessage);
 
 export default router;
