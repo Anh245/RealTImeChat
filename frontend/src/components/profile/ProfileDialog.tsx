@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import ProfileCard from "./ProfileCard";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Tabs } from "../ui/tabs";
 
 interface ProfileDialogProps {
   open: boolean;

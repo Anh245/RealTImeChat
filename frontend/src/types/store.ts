@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io-client";
-import type { Conversation, Message } from "./chat";
+import type { Conversation, ConversationUpdate, Message } from "./chat";
 import type { Friend, FriendRequest, User } from "./user";
 
 
@@ -73,7 +73,7 @@ export interface ChatState{
 
 
     // update convo
-    updateConversation:(conversation: unknown) => void;
+    updateConversation:(conversation: ConversationUpdate) => void;
 
     markAsSeen:() => Promise<void>;
 

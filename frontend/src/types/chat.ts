@@ -44,6 +44,8 @@ export interface ConversationResponse {
   conversations: Conversation[];
 }
 
+export type ConversationUpdate = Partial<Conversation> & Pick<Conversation, "_id">;
+
 export interface Message {
   _id: string;
   conversationId: string;
